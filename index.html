@@ -1,0 +1,2198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Our Little Garden</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap">
+
+<style>
+/* ── Monet-inspired impressionist palette ── */
+/* Single-theme: warm canvas — dark mode would break the painted feel */
+:root {
+  --bg: #FBF5EB;
+  --fg: #3A2D23;
+  --fg-muted: #7A6B5D;
+  --surface: #F0E8DA;
+  --surface-alt: #E8DFD0;
+  --pink: #D4A0A0;
+  --pink-soft: #F5E6E0;
+  --lavender: #B8A9C9;
+  --lavender-soft: #E8E0F0;
+  --sage: #8FA982;
+  --sage-soft: #D8E8D2;
+  --gold: #D4A855;
+  --blue: #7BA7BC;
+  --blue-soft: #D0E4EE;
+  --starry-bg: #0B1026;
+  --starry-fg: #F0E8DA;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Lora', 'Times New Roman', serif;
+  --font-typewriter: 'Special Elite', 'Courier New', monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #FBF5EB; --fg: #3A2D23; color-scheme: light;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #FBF5EB; --fg: #3A2D23; color-scheme: light;
+}
+
+*,*::before,*::after { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  line-height: 1.7;
+  margin: 0;
+  padding: env(safe-area-inset-top, 0px) 0 0 0;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* ── Floating petals layer ── */
+#petals-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+.petal {
+  position: absolute;
+  top: -60px;
+  opacity: 0;
+  animation: petalFall linear forwards;
+}
+@keyframes petalFall {
+  0% { opacity: 0; transform: translateX(0) rotate(0deg); }
+  10% { opacity: 0.7; }
+  90% { opacity: 0.5; }
+  100% { opacity: 0; transform: translateX(var(--drift)) rotate(var(--spin)); top: 105vh; }
+}
+
+/* ── Music toggle ── */
+.music-toggle {
+  position: fixed;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  z-index: 10000;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--pink);
+  background: var(--bg);
+  color: var(--pink);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 12px rgba(58,45,35,0.12);
+  transition: transform 0.3s, background 0.3s;
+  -webkit-tap-highlight-color: transparent;
+}
+.music-toggle:hover { transform: scale(1.1); background: var(--pink-soft); }
+.music-toggle.playing { animation: pulse-glow 2s ease-in-out infinite; }
+@keyframes pulse-glow {
+  0%,100% { box-shadow: 0 2px 12px rgba(212,160,160,0.3); }
+  50% { box-shadow: 0 2px 24px rgba(212,160,160,0.6); }
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  padding: 40px 24px;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(184,169,201,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 30%, rgba(212,160,160,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(143,169,130,0.1) 0%, transparent 50%),
+    var(--bg);
+}
+.hero-floral {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.hero-floral svg {
+  position: absolute;
+  opacity: 0.12;
+}
+/* Mobile-first: small floral SVGs */
+.hero-floral .fl-tl { top: -20px; left: -30px; width: 160px; transform: rotate(15deg); }
+.hero-floral .fl-tr { top: 40px; right: -40px; width: 140px; transform: rotate(-20deg); }
+.hero-floral .fl-bl { bottom: 20px; left: 10px; width: 120px; transform: rotate(30deg); }
+.hero-floral .fl-br { bottom: -10px; right: 20px; width: 140px; transform: rotate(-10deg); }
+
+.hero-subtitle {
+  font-family: var(--font-typewriter);
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  color: var(--fg-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 8vw, 5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0 0 8px;
+  color: var(--fg);
+  text-wrap: balance;
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--pink);
+}
+.hero-date {
+  font-family: var(--font-typewriter);
+  font-size: 1rem;
+  color: var(--fg-muted);
+  margin-top: 12px;
+}
+.typewriter-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--pink);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+.scroll-cue {
+  margin-top: 48px;
+  animation: bob 2.5s ease-in-out infinite;
+  color: var(--fg-muted);
+  font-size: 14px;
+  font-family: var(--font-typewriter);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.scroll-cue svg { width: 24px; height: 24px; stroke: var(--fg-muted); fill: none; }
+@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+
+/* ── DAYS COUNTER ── */
+.counter-section {
+  padding: 60px 24px;
+  text-align: center;
+  background: var(--surface);
+}
+.counter-section h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 400;
+  font-style: italic;
+  margin: 0 0 24px;
+  color: var(--fg);
+}
+.counter-number {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 10vw, 6rem);
+  font-weight: 700;
+  color: var(--pink);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.counter-label {
+  font-family: var(--font-typewriter);
+  font-size: 1rem;
+  color: var(--fg-muted);
+  margin-top: 8px;
+}
+.counter-sub {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--fg-muted);
+  margin-top: 16px;
+  font-style: italic;
+}
+
+/* ── SECTION DIVIDER (floral) ── */
+.floral-divider {
+  text-align: center;
+  padding: 20px 0;
+  color: var(--pink);
+  opacity: 0.4;
+}
+.floral-divider svg { width: 120px; }
+
+/* ── TIMELINE ── */
+.timeline-section {
+  padding: 60px 24px 80px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.timeline-section > h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  text-align: center;
+  margin: 0 0 12px;
+  font-weight: 700;
+}
+.timeline-section > p {
+  text-align: center;
+  font-family: var(--font-typewriter);
+  color: var(--fg-muted);
+  margin: 0 0 48px;
+  font-size: 0.95rem;
+}
+
+.timeline {
+  position: relative;
+  padding: 0;
+  list-style: none;
+  margin: 0;
+}
+/* Mobile-first: single-column timeline */
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, transparent, var(--pink), var(--lavender), var(--sage), var(--pink), transparent);
+}
+
+.timeline-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 48px;
+  position: relative;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s, transform 0.8s;
+}
+.timeline-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Mobile-first: all items flow left-to-right, single column */
+.timeline-item,
+.timeline-item:nth-child(odd),
+.timeline-item:nth-child(even) { flex-direction: row; }
+
+.timeline-dot {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--pink);
+  border: 3px solid var(--bg);
+  transform: translateX(-50%);
+  z-index: 2;
+  box-shadow: 0 0 0 3px var(--pink-soft);
+}
+.timeline-item:nth-child(3n+2) .timeline-dot { background: var(--lavender); box-shadow: 0 0 0 3px var(--lavender-soft); }
+.timeline-item:nth-child(3n) .timeline-dot { background: var(--sage); box-shadow: 0 0 0 3px var(--sage-soft); }
+
+/* Mobile-first: full-width cards offset from left line */
+.timeline-card {
+  width: calc(100% - 52px);
+  margin-left: 44px;
+  background: var(--bg);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(58,45,35,0.08);
+  border: 1px solid var(--surface-alt);
+}
+
+.timeline-photo {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--fg-muted);
+  font-family: var(--font-typewriter);
+  font-size: 0.85rem;
+  position: relative;
+  overflow: hidden;
+}
+.timeline-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.timeline-photo .placeholder-icon {
+  font-size: 2rem;
+  opacity: 0.3;
+}
+
+/* Scratch card overlay */
+.scratch-overlay {
+  position: absolute;
+  inset: 0;
+  cursor: crosshair;
+  z-index: 3;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.scratch-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-typewriter);
+  font-size: 0.9rem;
+  color: #fff;
+  z-index: 4;
+  pointer-events: none;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  text-align: center;
+  line-height: 1.5;
+}
+.scratch-label.hidden { display: none; }
+
+/* Photo carousel within a card */
+.photo-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.photo-carousel::-webkit-scrollbar { display: none; }
+.photo-carousel .carousel-slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  aspect-ratio: 4/3;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-typewriter);
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+  flex-direction: column;
+  gap: 4px;
+}
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 0;
+}
+.carousel-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--surface-alt);
+  transition: background 0.3s;
+}
+.carousel-dots span.active { background: var(--pink); }
+
+.timeline-content {
+  padding: 16px 20px;
+}
+.timeline-date {
+  font-family: var(--font-typewriter);
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+.timeline-note {
+  font-family: var(--font-typewriter);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── APOLOGY SECTION ── */
+.apology-section {
+  padding: 80px 24px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(184,169,201,0.1) 0%, transparent 60%),
+    radial-gradient(ellipse at 30% 70%, rgba(212,160,160,0.08) 0%, transparent 50%),
+    var(--surface);
+}
+.apology-section h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  margin: 0 0 8px;
+  font-weight: 400;
+  font-style: italic;
+}
+.apology-intro {
+  font-family: var(--font-body);
+  color: var(--fg-muted);
+  max-width: 500px;
+  margin: 0 auto 40px;
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+/* Mobile-first: compact bloom flower */
+.bloom-flower {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  margin: 0 auto 40px;
+}
+.bloom-petal {
+  position: absolute;
+  width: 80px;
+  height: 40px;
+  top: 50%;
+  left: 50%;
+  transform-origin: 0% 50%;
+  cursor: pointer;
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s;
+}
+.bloom-petal svg {
+  width: 100%;
+  height: 100%;
+}
+/* Petal popup modal — themed to match the site */
+.petal-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(58,45,35,0.25);
+  z-index: 99998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+.petal-popup-overlay.show { opacity: 1; pointer-events: auto; }
+.petal-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.85);
+  z-index: 99999;
+  background: var(--bg);
+  border-radius: 16px;
+  padding: 28px 24px 20px;
+  max-width: calc(100vw - 48px);
+  width: 320px;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 8px 40px rgba(58,45,35,0.18);
+  border: 1px solid var(--surface-alt);
+}
+.petal-popup.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+.petal-popup::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 20px; right: 20px;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--pink), var(--lavender), var(--sage));
+}
+.petal-popup-icon {
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+  display: block;
+}
+.petal-popup-text {
+  font-family: var(--font-typewriter);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--fg);
+  margin: 0 0 20px;
+}
+.petal-popup-close {
+  font-family: var(--font-typewriter);
+  font-size: 0.85rem;
+  padding: 10px 28px;
+  border: 1px solid var(--pink);
+  background: var(--pink-soft);
+  border-radius: 20px;
+  cursor: pointer;
+  color: var(--fg);
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.3s;
+}
+.petal-popup-close:hover { background: var(--pink); color: #fff; }
+.petal-popup-count {
+  font-family: var(--font-typewriter);
+  font-size: 0.75rem;
+  color: var(--fg-muted);
+  margin-top: 12px;
+}
+
+.bloom-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  box-shadow: 0 2px 12px rgba(212,168,85,0.3);
+  transition: transform 0.6s, box-shadow 0.6s;
+}
+.bloom-center.revealed {
+  transform: translate(-50%, -50%) scale(1.2);
+  box-shadow: 0 4px 24px rgba(212,168,85,0.5);
+}
+.bloom-center svg { width: 28px; height: 28px; }
+
+.bloom-instruction {
+  font-family: var(--font-typewriter);
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+  margin-top: 0;
+}
+
+.apology-final {
+  max-width: 520px;
+  margin: 0 auto;
+  font-family: var(--font-typewriter);
+  font-size: 1rem;
+  line-height: 1.8;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1s, transform 1s;
+  padding: 24px;
+  background: var(--bg);
+  border-radius: 8px;
+  border: 1px dashed var(--pink);
+}
+.apology-final.visible { opacity: 1; transform: translateY(0); }
+
+/* ── STARRY NIGHT / LETTER ── */
+.starry-section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  overflow: hidden;
+}
+#starry-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* Mobile-first: compact letter padding */
+.letter-container {
+  position: relative;
+  z-index: 2;
+  max-width: 560px;
+  width: 100%;
+  background: rgba(251,245,235,0.92);
+  border-radius: 4px;
+  padding: 28px 20px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+  transform: rotate(-0.5deg);
+}
+.letter-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 24px; right: 24px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--pink), var(--lavender), var(--sage));
+  border-radius: 2px;
+}
+.letter-header {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
+  font-style: italic;
+  color: var(--fg);
+  margin: 0 0 8px;
+  text-align: center;
+}
+.letter-date {
+  font-family: var(--font-typewriter);
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+  text-align: center;
+  margin-bottom: 24px;
+}
+.letter-body {
+  font-family: var(--font-typewriter);
+  font-size: 0.95rem;
+  line-height: 2;
+  color: var(--fg);
+  min-height: 200px;
+}
+.letter-body .line {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.5s, transform 0.5s;
+  margin-bottom: 4px;
+}
+.letter-body .line.typed { opacity: 1; transform: translateY(0); }
+
+.letter-sign {
+  text-align: right;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.2rem;
+  margin-top: 24px;
+  color: var(--pink);
+  opacity: 0;
+  transition: opacity 1s 0.5s;
+}
+.letter-sign.visible { opacity: 1; }
+
+/* ── FOOTER ── */
+.site-footer {
+  padding: 40px 24px;
+  text-align: center;
+  background: var(--surface);
+  position: relative;
+}
+.footer-text {
+  font-family: var(--font-typewriter);
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+}
+.footer-heart {
+  display: inline-block;
+  color: var(--pink);
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+@keyframes heartbeat {
+  0%,100% { transform: scale(1); }
+  15% { transform: scale(1.2); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.15); }
+  60% { transform: scale(1); }
+}
+.easter-egg {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  opacity: 0.15;
+  transition: opacity 0.3s, transform 0.5s;
+}
+.easter-egg:hover { opacity: 0.4; transform: scale(1.3); }
+/* Mobile-first: easter egg popup sized for phone */
+.easter-egg-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: var(--bg);
+  border: 2px solid var(--pink);
+  border-radius: 12px;
+  padding: 24px 20px;
+  text-align: center;
+  z-index: 100000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s, transform 0.5s;
+  box-shadow: 0 12px 48px rgba(58,45,35,0.2);
+  max-width: calc(100vw - 48px);
+  width: 340px;
+}
+.easter-egg-message.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+.easter-egg-message h3 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.3rem;
+  margin: 0 0 12px;
+  color: var(--pink);
+}
+.easter-egg-message p {
+  font-family: var(--font-typewriter);
+  font-size: 0.9rem;
+  margin: 0 0 16px;
+  color: var(--fg);
+  line-height: 1.6;
+}
+.easter-egg-message button {
+  font-family: var(--font-typewriter);
+  padding: 12px 32px;
+  border: 1px solid var(--pink);
+  background: var(--pink-soft);
+  border-radius: 20px;
+  cursor: pointer;
+  color: var(--fg);
+  font-size: 0.95rem;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+.easter-egg-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(58,45,35,0.3);
+  z-index: 99999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s;
+}
+.easter-egg-overlay.show { opacity: 1; pointer-events: auto; }
+
+/* ── Scroll animations ── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s, transform 0.8s;
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* ── Touch targets: 44px minimum for iOS HIG ── */
+.bloom-petal,
+.easter-egg,
+.music-toggle,
+.carousel-dots span {
+  min-width: 44px;
+  min-height: 44px;
+}
+.easter-egg {
+  width: 44px;
+  height: 44px;
+  bottom: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.easter-egg svg { width: 20px; height: 20px; }
+
+/* ── MONET-INSPIRED IMPRESSIONIST BACKGROUNDS ── */
+/* CSS-only painterly washes that evoke Monet's palette */
+.hero.monet-bg {
+  background:
+    radial-gradient(ellipse at 15% 80%, rgba(143,169,130,0.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 20%, rgba(123,167,188,0.15) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 60%, rgba(212,160,160,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 30% 30%, rgba(184,169,201,0.14) 0%, transparent 45%),
+    radial-gradient(ellipse at 70% 75%, rgba(212,168,85,0.08) 0%, transparent 40%),
+    linear-gradient(170deg, #F5EDE0 0%, #FBF5EB 30%, #EDE7D8 60%, #F0E8DA 100%);
+}
+.counter-section.monet-bg {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(212,168,85,0.2) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 30%, rgba(143,169,130,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(212,160,160,0.1) 0%, transparent 50%),
+    linear-gradient(180deg, #F0E8DA 0%, #EDE4D2 50%, #F0E8DA 100%);
+}
+.timeline-section.monet-bg {
+  background:
+    radial-gradient(ellipse at 10% 20%, rgba(143,169,130,0.2) 0%, transparent 45%),
+    radial-gradient(ellipse at 90% 50%, rgba(184,169,201,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 40% 70%, rgba(212,160,160,0.1) 0%, transparent 55%),
+    radial-gradient(ellipse at 60% 10%, rgba(123,167,188,0.12) 0%, transparent 40%),
+    var(--bg);
+}
+.apology-section.monet-bg {
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(184,169,201,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 25% 70%, rgba(143,169,130,0.12) 0%, transparent 45%),
+    radial-gradient(ellipse at 75% 30%, rgba(212,160,160,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 90%, rgba(123,167,188,0.08) 0%, transparent 40%),
+    linear-gradient(160deg, #F0E8DA 0%, #EDE4D2 40%, #F5EDE0 100%);
+}
+
+/* ── COLLAGE GRID ── */
+.collage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  width: 100%;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+.collage-item {
+  overflow: hidden;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.collage-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.collage-item .placeholder-icon {
+  font-size: 1.5rem;
+  opacity: 0.3;
+}
+/* Single photo — span full area */
+.collage[data-count="1"] { grid-template-columns: 1fr; }
+.collage[data-count="1"] .collage-item { aspect-ratio: 4/3; }
+/* Two photos — side by side */
+.collage[data-count="2"] .collage-item { aspect-ratio: auto; }
+/* 3+ photos: first item spans left column full height */
+.collage:not([data-count="1"]):not([data-count="2"]) {
+  grid-template-rows: 1fr 1fr;
+}
+.collage:not([data-count="1"]):not([data-count="2"]) .collage-item:first-child {
+  grid-row: 1 / -1;
+}
+/* "+N more" overlay on the last visible item */
+.collage-more {
+  position: absolute;
+  inset: 0;
+  background: rgba(58,45,35,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* ── FULLSCREEN CAROUSEL POPUP ── */
+.carousel-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11,16,38,0.92);
+  z-index: 100001;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.carousel-popup-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.carousel-popup-close {
+  position: absolute;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(4px);
+}
+.carousel-popup-counter {
+  position: absolute;
+  top: calc(20px + env(safe-area-inset-top, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-typewriter);
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.7);
+  z-index: 10;
+}
+.carousel-popup-image-wrap {
+  width: 100%;
+  max-width: 600px;
+  max-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  position: relative;
+}
+.carousel-popup-image-wrap img {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 4px;
+}
+.carousel-popup-image-wrap .placeholder-slide {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: var(--surface);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-typewriter);
+  color: var(--fg-muted);
+  font-size: 1rem;
+}
+.carousel-popup-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+.carousel-popup-nav.prev { left: 8px; }
+.carousel-popup-nav.next { right: 8px; }
+.carousel-popup-note {
+  margin-top: 16px;
+  padding: 0 24px;
+  max-width: 500px;
+  text-align: center;
+}
+.carousel-popup-note:empty { display: none; margin: 0; padding: 0; }
+.carousel-popup-note p {
+  font-family: var(--font-typewriter);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.85);
+  margin: 0;
+  font-style: italic;
+}
+
+/* ── SCRATCH-TO-REVEAL INTERSTITIALS ── */
+.scratch-interstitial {
+  padding: 60px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: relative;
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(143,169,130,0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 60%, rgba(123,167,188,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(212,168,85,0.15) 0%, transparent 60%),
+    linear-gradient(135deg, #C5B3D9 0%, #D4A0A0 35%, #B8A9C9 65%, #A0B4D4 100%);
+  overflow: hidden;
+}
+.scratch-interstitial > * { position: relative; z-index: 1; }
+.scratch-interstitial-label {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-style: italic;
+  color: #fff;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.2);
+  margin-bottom: 20px;
+  text-align: center;
+}
+.scratch-interstitial-card {
+  width: 280px;
+  height: 280px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.scratch-interstitial-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.scratch-interstitial-card .placeholder-icon {
+  font-size: 2.5rem;
+  opacity: 0.3;
+}
+.scratch-interstitial-card canvas.scratch-overlay {
+  border-radius: 12px;
+}
+.scratch-interstitial-hint {
+  font-family: var(--font-typewriter);
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.7);
+  margin-top: 16px;
+  text-align: center;
+}
+
+/* ── DESKTOP ENHANCEMENT ── */
+@media (min-width: 768px) {
+  .music-toggle {
+    bottom: 24px;
+    right: 24px;
+  }
+  .hero-floral .fl-tl { width: 260px; }
+  .hero-floral .fl-tr { width: 220px; }
+  .hero-floral .fl-bl { width: 200px; }
+  .hero-floral .fl-br { width: 240px; }
+  .timeline::before {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .timeline-item:nth-child(odd) { flex-direction: row; }
+  .timeline-item:nth-child(even) { flex-direction: row-reverse; }
+  .timeline-dot {
+    left: 50%;
+    top: 24px;
+  }
+  .timeline-card {
+    width: calc(50% - 40px);
+    margin-left: 0;
+  }
+  .collage { gap: 4px; }
+  .collage-more { font-size: 1.6rem; }
+  .carousel-popup-image-wrap { max-width: 700px; padding: 0 48px; }
+  .carousel-popup-nav.prev { left: 24px; }
+  .carousel-popup-nav.next { right: 24px; }
+  .scratch-interstitial { padding: 80px 24px; }
+  .scratch-interstitial-card { width: 340px; height: 340px; }
+  .bloom-flower { width: 320px; height: 320px; }
+  .bloom-petal { width: 100px; height: 50px; }
+  .letter-container { padding: 40px 32px; }
+  .easter-egg {
+    width: 20px;
+    height: 20px;
+    bottom: 12px;
+    right: 16px;
+  }
+  .easter-egg svg { width: 20px; height: 20px; }
+}
+</style>
+
+<!-- ============================================ -->
+<!-- FLOATING PETALS CONTAINER -->
+<!-- ============================================ -->
+<div id="petals-container"></div>
+
+<!-- ============================================ -->
+<!-- MUSIC TOGGLE -->
+<!-- ============================================ -->
+<button class="music-toggle" id="musicBtn" aria-label="Toggle music" title="Play/Pause music">
+  ♪
+</button>
+<!--
+  MUSIC: Add your audio file to the repo and update the src below.
+  Suggested path: audio/song.mp3
+-->
+<audio id="bgMusic" loop preload="auto">
+  <!-- <source src="audio/song.mp3" type="audio/mpeg"> -->
+</audio>
+
+<!-- ============================================ -->
+<!-- HERO SECTION -->
+<!-- ============================================ -->
+<section class="hero monet-bg">
+  <div class="hero-floral">
+    <!-- Lily SVG - top left -->
+    <svg class="fl-tl" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g opacity="0.8">
+        <path d="M100 40 C80 60, 30 70, 20 120 C40 100, 70 90, 100 100" fill="#D4A0A0"/>
+        <path d="M100 40 C120 60, 170 70, 180 120 C160 100, 130 90, 100 100" fill="#E8B4B8"/>
+        <path d="M100 40 C90 70, 60 110, 50 160 C80 130, 90 110, 100 100" fill="#F5E6E0"/>
+        <path d="M100 40 C110 70, 140 110, 150 160 C120 130, 110 110, 100 100" fill="#D4A0A0"/>
+        <circle cx="100" cy="100" r="12" fill="#D4A855"/>
+      </g>
+    </svg>
+    <!-- Hydrangea SVG - top right -->
+    <svg class="fl-tr" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g opacity="0.8">
+        <circle cx="80" cy="70" r="18" fill="#A0B4D4"/>
+        <circle cx="110" cy="60" r="16" fill="#B8A9C9"/>
+        <circle cx="130" cy="85" r="17" fill="#A0B4D4"/>
+        <circle cx="95" cy="95" r="19" fill="#C5B3D9"/>
+        <circle cx="120" cy="110" r="15" fill="#B8A9C9"/>
+        <circle cx="85" cy="115" r="14" fill="#A0B4D4"/>
+        <circle cx="105" cy="80" r="8" fill="#D4A855" opacity="0.6"/>
+      </g>
+    </svg>
+    <!-- Carnation SVG - bottom left -->
+    <svg class="fl-bl" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g opacity="0.8">
+        <path d="M100 110 C85 90, 60 85, 55 60 C70 70, 85 80, 100 80 C90 70, 70 50, 75 35 C90 50, 95 65, 100 80 C105 65, 110 50, 125 35 C130 50, 110 70, 100 80 C115 80, 130 70, 145 60 C140 85, 115 90, 100 110Z" fill="#E8B4B8"/>
+        <path d="M100 110 L95 170" stroke="#8FA982" stroke-width="3"/>
+        <path d="M95 140 C80 130, 70 135, 65 145" stroke="#8FA982" stroke-width="2" fill="none"/>
+      </g>
+    </svg>
+    <!-- Lisianthus SVG - bottom right -->
+    <svg class="fl-br" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g opacity="0.8">
+        <path d="M100 50 C80 60, 50 80, 60 110 C70 90, 85 80, 100 85" fill="#C5B3D9"/>
+        <path d="M100 50 C120 60, 150 80, 140 110 C130 90, 115 80, 100 85" fill="#B8A9C9"/>
+        <path d="M100 50 C95 75, 80 100, 85 130 C90 105, 95 90, 100 85" fill="#D8C8E8"/>
+        <path d="M100 50 C105 75, 120 100, 115 130 C110 105, 105 90, 100 85" fill="#C5B3D9"/>
+        <circle cx="100" cy="85" r="10" fill="#D4A855" opacity="0.7"/>
+      </g>
+    </svg>
+  </div>
+
+  <p class="hero-subtitle">a birthday letter, in flowers</p>
+  <!-- CUSTOMIZE: Replace [Her Name] with her actual name -->
+  <h1>Happy Birthday,<br><em id="heroName">[Her Name]</em></h1>
+  <p class="hero-date" id="heroDate"></p>
+  <div class="scroll-cue">
+    scroll to begin
+    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- DAYS COUNTER -->
+<!-- ============================================ -->
+<section class="counter-section monet-bg fade-in">
+  <h2>and counting&hellip;</h2>
+  <!-- CUSTOMIZE: Change the data-start date to when you started dating -->
+  <div class="counter-number" id="dayCount" data-start="2026-08-11">0</div>
+  <div class="counter-label">days of us</div>
+  <p class="counter-sub">every single one, a gift</p>
+</section>
+
+<!-- Floral divider -->
+<div class="floral-divider">
+  <svg viewBox="0 0 120 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="60" cy="10" r="3"/>
+    <line x1="10" y1="10" x2="52" y2="10" stroke="currentColor" stroke-width="1"/>
+    <line x1="68" y1="10" x2="110" y2="10" stroke="currentColor" stroke-width="1"/>
+    <circle cx="20" cy="10" r="1.5"/><circle cx="100" cy="10" r="1.5"/>
+  </svg>
+</div>
+
+<!-- ============================================ -->
+<!-- TIMELINE -->
+<!-- ============================================ -->
+<section class="timeline-section monet-bg">
+  <h2>Two Months of Us</h2>
+  <p>a small collection of moments I never want to forget</p>
+
+  <div class="timeline">
+
+    <!-- ─── MEMORY 1: First day we met ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="2" data-photos='[{"src":"","note":""},{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">27th July</div>
+          <p class="timeline-note">The first day we met. I had no idea my whole world was about to change.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MEMORY 2: Asked her out + first date ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="4" data-photos='[{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">1st August</div>
+          <p class="timeline-note">The day I finally asked you out, and our very first date. My heart was racing the whole time.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MEMORY 3: First cooking date ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="1" data-photos='[{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">4th August</div>
+          <p class="timeline-note">Our first cooking date. Everything tasted better because we made it together.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MEMORY 4: Second date ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="4" data-photos='[{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">6th August</div>
+          <p class="timeline-note">Second date — and I already knew I wanted a hundred more of these.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MEMORY 5: Third date ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="4" data-photos='[{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span><div class="collage-more">+2</div></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">14th August</div>
+          <p class="timeline-note">Third date. By now it wasn't just dating — it was falling.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end timeline (paused for scratch interstitial) -->
+</section>
+
+<!-- ═══ SCRATCH INTERSTITIAL 1 (after Memory 5) ═══ -->
+<section class="scratch-interstitial fade-in">
+  <p class="scratch-interstitial-label">a little surprise for you&hellip;</p>
+  <div class="scratch-interstitial-card" data-scratch="true">
+    <span class="placeholder-icon">&#x1f4f7;</span>
+    <!-- PHOTO: Replace with <img src="images/surprise-1.jpg" alt=""> -->
+    <canvas class="scratch-overlay"></canvas>
+    <div class="scratch-label">&#x2728; scratch to reveal &#x2728;</div>
+  </div>
+  <p class="scratch-interstitial-hint">use your finger to scratch</p>
+</section>
+
+<!-- ═══ TIMELINE continues ═══ -->
+<section class="timeline-section monet-bg" style="padding-top:20px;">
+  <div class="timeline">
+
+    <!-- ─── MEMORY 6: First L'ocal meet + seeing her room ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="1" data-photos='[{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">15th August</div>
+          <p class="timeline-note">First L'ocal meet, and the first time I saw your room. It felt like stepping inside your world.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MEMORY 7: She came over when he was sick ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="1" data-photos='[{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">21st August</div>
+          <p class="timeline-note">You came over when I was sick. That's when I knew your love wasn't just words.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MEMORY 8: KUURAKU DATE + first I love you ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="4" data-photos='[{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span><div class="collage-more">+4</div></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">23rd August</div>
+          <p class="timeline-note">Kuuraku date — and the first time I said "I love you." I meant every syllable.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MEMORY 9: Rakhi photoshoot ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="4" data-photos='[{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">28th August</div>
+          <p class="timeline-note">The Rakhi photoshoot. You looked absolutely stunning, and I couldn't stop clicking.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MEMORY 10: First month anniversary ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="4" data-photos='[{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">1st September</div>
+          <p class="timeline-note">Our first month anniversary. One month down, a lifetime of them to go.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ SCRATCH INTERSTITIAL 2 (after Memory 10) ═══ -->
+<section class="scratch-interstitial fade-in">
+  <p class="scratch-interstitial-label">another one, just for you&hellip;</p>
+  <div class="scratch-interstitial-card" data-scratch="true">
+    <span class="placeholder-icon">&#x1f4f7;</span>
+    <!-- PHOTO: Replace with <img src="images/surprise-2.jpg" alt=""> -->
+    <canvas class="scratch-overlay"></canvas>
+    <div class="scratch-label">&#x2728; scratch to reveal &#x2728;</div>
+  </div>
+  <p class="scratch-interstitial-hint">use your finger to scratch</p>
+</section>
+
+<!-- ═══ TIMELINE continues ═══ -->
+<section class="timeline-section monet-bg" style="padding-top:20px;">
+  <div class="timeline">
+
+    <!-- ─── MEMORY 11: Tumultuous long weekend ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="4" data-photos='[{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span><div class="collage-more">+6</div></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">4th &ndash; 6th September</div>
+          <p class="timeline-note">The tumultuous long weekend. Not every chapter is easy, but every one matters.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MEMORY 12: Big Chill + Janpath date ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="4" data-photos='[{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span><div class="collage-more">+4</div></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">15th September</div>
+          <p class="timeline-note">Big Chill + Janpath date. Ice cream, wandering, and your hand in mine.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ SCRATCH INTERSTITIAL 3 (after Memory 12) ═══ -->
+<section class="scratch-interstitial fade-in">
+  <p class="scratch-interstitial-label">keep scratching&hellip;</p>
+  <div class="scratch-interstitial-card" data-scratch="true">
+    <span class="placeholder-icon">&#x1f4f7;</span>
+    <!-- PHOTO: Replace with <img src="images/surprise-3.jpg" alt=""> -->
+    <canvas class="scratch-overlay"></canvas>
+    <div class="scratch-label">&#x2728; scratch to reveal &#x2728;</div>
+  </div>
+  <p class="scratch-interstitial-hint">use your finger to scratch</p>
+</section>
+
+<!-- ═══ TIMELINE continues ═══ -->
+<section class="timeline-section monet-bg" style="padding-top:20px;">
+  <div class="timeline">
+
+    <!-- ─── MEMORY 13: Parisha di date + came over + dropped off ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="2" data-photos='[{"src":"","note":""},{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">September</div>
+          <p class="timeline-note">The Parisha di date, you came over, and the drive to drop you off. Every goodbye gets harder.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ SCRATCH INTERSTITIAL 4 (after Memory 13) ═══ -->
+<section class="scratch-interstitial fade-in">
+  <p class="scratch-interstitial-label">one last hidden surprise&hellip;</p>
+  <div class="scratch-interstitial-card" data-scratch="true">
+    <span class="placeholder-icon">&#x1f4f7;</span>
+    <!-- PHOTO: Replace with <img src="images/surprise-4.jpg" alt=""> -->
+    <canvas class="scratch-overlay"></canvas>
+    <div class="scratch-label">&#x2728; scratch to reveal &#x2728;</div>
+  </div>
+  <p class="scratch-interstitial-hint">use your finger to scratch</p>
+</section>
+
+<!-- ═══ TIMELINE continues (final stretch) ═══ -->
+<section class="timeline-section monet-bg" style="padding-top:20px;">
+  <div class="timeline">
+
+    <!-- ─── MEMORY 14: MKT + Kofuku date ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="4" data-photos='[{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span><div class="collage-more">+2</div></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">19th September</div>
+          <p class="timeline-note">MKT + Kofuku date. Good food, better company. Always.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MEMORY 15: Yum Yum Cha date ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="1" data-photos='[{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">25th September</div>
+          <p class="timeline-note">Yum Yum Cha date. Simple, sweet, ours.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MEMORY 16: Her birthday ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="4" data-photos='[{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">29th September</div>
+          <p class="timeline-note">Your birthday — and when I fucked up big time. I'm still making up for it. This whole page is part of that.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MEMORY 17: Long weekend block building ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="4" data-photos='[{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span><div class="collage-more">+6</div></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">2nd &ndash; 4th October</div>
+          <p class="timeline-note">Long weekend block building fun. Building things with you — even tiny plastic ones — is my favourite kind of peace.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MEMORY 18: When she came to surprise him ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="4" data-photos='[{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span><div class="collage-more">+1</div></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">7th October</div>
+          <p class="timeline-note">When you showed up to surprise me. My heart literally skipped. You are the best surprise of my life.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MEMORY 19: Nainital Trip ─── -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="collage" data-count="4" data-photos='[{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""},{"src":"","note":""}]'>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span></div>
+          <div class="collage-item"><span class="placeholder-icon">&#x1f4f7;</span><div class="collage-more">+11</div></div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-date">9th &ndash; 11th October</div>
+          <p class="timeline-note">Nainital trip. Mountains, mist, and you. The most beautiful trip of my life — and it wasn't because of the scenery.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Floral divider -->
+<div class="floral-divider">
+  <svg viewBox="0 0 120 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="60" cy="10" r="3"/>
+    <line x1="10" y1="10" x2="52" y2="10" stroke="currentColor" stroke-width="1"/>
+    <line x1="68" y1="10" x2="110" y2="10" stroke="currentColor" stroke-width="1"/>
+    <circle cx="20" cy="10" r="1.5"/><circle cx="100" cy="10" r="1.5"/>
+  </svg>
+</div>
+
+<!-- ============================================ -->
+<!-- APOLOGY GARDEN -->
+<!-- ============================================ -->
+<section class="apology-section monet-bg">
+  <h2>A Small Garden of Sorry</h2>
+  <p class="apology-intro">I know this birthday wasn't what you deserved. Tap each petal — I have something to say.</p>
+
+  <div class="bloom-flower" id="bloomFlower">
+    <!-- Petals are positioned by JS in a circle -->
+    <!-- CUSTOMIZE: Change each data-message to your actual apology lines -->
+    <div class="bloom-petal" data-index="0" data-message="I'm sorry I couldn't be there the way you deserved.">
+      <svg viewBox="0 0 100 50"><ellipse cx="60" cy="25" rx="38" ry="20" fill="#D4A0A0" opacity="0.85"/></svg>
+    </div>
+    <div class="bloom-petal" data-index="1" data-message="I wish I could have made the day as special as you are.">
+      <svg viewBox="0 0 100 50"><ellipse cx="60" cy="25" rx="38" ry="20" fill="#C5B3D9" opacity="0.85"/></svg>
+    </div>
+    <div class="bloom-petal" data-index="2" data-message="You deserve the world — and I'll keep trying to give it to you.">
+      <svg viewBox="0 0 100 50"><ellipse cx="60" cy="25" rx="38" ry="20" fill="#A0B4D4" opacity="0.85"/></svg>
+    </div>
+    <div class="bloom-petal" data-index="3" data-message="Every day with you is a gift I don't take for granted.">
+      <svg viewBox="0 0 100 50"><ellipse cx="60" cy="25" rx="38" ry="20" fill="#E8B4B8" opacity="0.85"/></svg>
+    </div>
+    <div class="bloom-petal" data-index="4" data-message="I promise to make it up to you — not just today, but always.">
+      <svg viewBox="0 0 100 50"><ellipse cx="60" cy="25" rx="38" ry="20" fill="#B8A9C9" opacity="0.85"/></svg>
+    </div>
+    <div class="bloom-petal" data-index="5" data-message="Thank you for your patience, your warmth, your everything.">
+      <svg viewBox="0 0 100 50"><ellipse cx="60" cy="25" rx="38" ry="20" fill="#D4A0A0" opacity="0.85"/></svg>
+    </div>
+    <div class="bloom-center" id="bloomCenter">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+    </div>
+  </div>
+  <p class="bloom-instruction" id="bloomInstruction">tap a petal to begin</p>
+
+  <!-- Petal message popup -->
+  <div class="petal-popup-overlay" id="petalOverlay"></div>
+  <div class="petal-popup" id="petalPopup">
+    <span class="petal-popup-icon">&#x1f33a;</span>
+    <p class="petal-popup-text" id="petalPopupText"></p>
+    <button class="petal-popup-close" id="petalPopupClose">&#x2764; close</button>
+    <p class="petal-popup-count" id="petalPopupCount"></p>
+  </div>
+
+  <!-- Final apology note — appears after all petals are opened -->
+  <div class="apology-final" id="apologyFinal">
+    <!-- CUSTOMIZE: Write your full apology note here -->
+    <p>I know a website can't replace the birthday celebration you deserved. But I hope these little flowers and memories show you what you mean to me. I'm going to make it up to you — not with grand gestures, but with the small, everyday kind of love that you've shown me every single day.</p>
+    <p style="margin-top:12px;color:var(--pink);font-style:italic;">I love you. Happy Birthday. &#x2764;</p>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- STARRY NIGHT / BIRTHDAY LETTER -->
+<!-- ============================================ -->
+<section class="starry-section" id="starrySection">
+  <canvas id="starry-canvas"></canvas>
+  <div class="letter-container fade-in">
+    <h2 class="letter-header">A Letter for You</h2>
+    <p class="letter-date" id="letterDate"></p>
+    <div class="letter-body" id="letterBody">
+      <!-- CUSTOMIZE: Replace these lines with your actual birthday letter -->
+      <div class="line">Dear [Her Name],</div>
+      <div class="line">&nbsp;</div>
+      <div class="line">Two months ago, my life changed in the most beautiful way.</div>
+      <div class="line">You walked in and suddenly everything had colour.</div>
+      <div class="line">&nbsp;</div>
+      <div class="line">I know I couldn't do as much as I wanted for your birthday.</div>
+      <div class="line">And that bothers me more than you probably know.</div>
+      <div class="line">&nbsp;</div>
+      <div class="line">But I want you to know this:</div>
+      <div class="line">You are the most incredible person I've ever met.</div>
+      <div class="line">Your laugh is my favourite sound.</div>
+      <div class="line">Your kindness makes me want to be better.</div>
+      <div class="line">&nbsp;</div>
+      <div class="line">This little garden of memories is just the beginning.</div>
+      <div class="line">I can't wait to fill a hundred more pages with us.</div>
+      <div class="line">&nbsp;</div>
+      <div class="line">Happy birthday, my love.</div>
+      <div class="line">Here's to every day that comes next.</div>
+    </div>
+    <div class="letter-sign" id="letterSign">
+      <!-- CUSTOMIZE: Replace with your name -->
+      Forever yours, [Your Name]
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- FOOTER -->
+<!-- ============================================ -->
+<footer class="site-footer">
+  <p class="footer-text">
+    made with <span class="footer-heart">&hearts;</span> for the most beautiful girl in the world
+  </p>
+  <!-- Easter egg — tiny flower in the corner -->
+  <div class="easter-egg" id="easterEgg" title="🌸">
+    <svg viewBox="0 0 20 20" fill="#D4A0A0" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="6" r="4"/><circle cx="6" cy="10" r="4"/><circle cx="14" cy="10" r="4"/><circle cx="8" cy="14" r="4"/><circle cx="12" cy="14" r="4"/>
+      <circle cx="10" cy="10" r="2.5" fill="#D4A855"/>
+    </svg>
+  </div>
+</footer>
+
+<!-- Easter egg popup -->
+<div class="easter-egg-overlay" id="eggOverlay"></div>
+<div class="easter-egg-message" id="eggMessage">
+  <h3>You found it! &#x1f338;</h3>
+  <!-- CUSTOMIZE: Write your secret message here -->
+  <p>There's a secret hidden in every flower I pick for you — it says: I'm the luckiest person alive.</p>
+  <button id="eggClose">&#x2764; close</button>
+</div>
+
+
+<!-- ============================================ -->
+<!-- FULLSCREEN CAROUSEL POPUP -->
+<!-- ============================================ -->
+<div class="carousel-popup-overlay" id="carouselPopup">
+  <button class="carousel-popup-close" id="carouselClose">&times;</button>
+  <span class="carousel-popup-counter" id="carouselCounter">1 / 4</span>
+  <button class="carousel-popup-nav prev" id="carouselPrev">&#x2039;</button>
+  <button class="carousel-popup-nav next" id="carouselNext">&#x203a;</button>
+  <div class="carousel-popup-image-wrap" id="carouselImageWrap">
+    <div class="placeholder-slide"><span class="placeholder-icon" style="font-size:3rem;opacity:0.3">&#x1f4f7;</span></div>
+  </div>
+  <div class="carousel-popup-note" id="carouselNote"></div>
+</div>
+
+<!-- ============================================ -->
+<!-- SCRIPTS -->
+<!-- ============================================ -->
+<script>
+(function() {
+  'use strict';
+
+  // ── Dates ──
+  const today = new Date();
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('heroDate').textContent = months[today.getMonth()] + ' ' + today.getDate() + ', ' + today.getFullYear();
+  document.getElementById('letterDate').textContent = months[today.getMonth()] + ' ' + today.getDate() + ', ' + today.getFullYear();
+
+  // ── Days counter ──
+  const counterEl = document.getElementById('dayCount');
+  const startDate = new Date(counterEl.dataset.start);
+  function updateCounter() {
+    const diff = Math.floor((Date.now() - startDate.getTime()) / 86400000);
+    counterEl.textContent = diff;
+  }
+  updateCounter();
+  setInterval(updateCounter, 60000);
+
+  // ── Scroll animations (IntersectionObserver) ──
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-in, .timeline-item, .scratch-interstitial').forEach(function(el) {
+    observer.observe(el);
+  });
+
+  // ── Floating petals ──
+  const petalContainer = document.getElementById('petals-container');
+  const petalColors = ['#F5E6E0','#C5B3D9','#A0B4D4','#E8B4B8','#D8C8E8','#D4A0A0'];
+  const petalShapes = [
+    // Lily petal
+    '<svg width="22" height="28" viewBox="0 0 22 28"><path d="M11 0 C5 6, 0 14, 2 22 C6 26, 16 26, 20 22 C22 14, 17 6, 11 0Z" fill="FILL" opacity="0.6"/></svg>',
+    // Round petal (hydrangea)
+    '<svg width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="FILL" opacity="0.5"/></svg>',
+    // Carnation petal
+    '<svg width="20" height="16" viewBox="0 0 20 16"><path d="M10 0 C4 2, 0 6, 2 12 C5 16, 15 16, 18 12 C20 6, 16 2, 10 0Z" fill="FILL" opacity="0.55"/></svg>',
+    // Lisianthus petal
+    '<svg width="20" height="24" viewBox="0 0 20 24"><path d="M10 0 C3 8, 0 16, 4 22 C7 24, 13 24, 16 22 C20 16, 17 8, 10 0Z" fill="FILL" opacity="0.5"/></svg>'
+  ];
+
+  function spawnPetal() {
+    var el = document.createElement('div');
+    el.className = 'petal';
+    var color = petalColors[Math.floor(Math.random() * petalColors.length)];
+    var shape = petalShapes[Math.floor(Math.random() * petalShapes.length)];
+    el.innerHTML = shape.replace('FILL', color);
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.setProperty('--drift', (Math.random() * 120 - 60) + 'px');
+    el.style.setProperty('--spin', (Math.random() * 360) + 'deg');
+    var dur = 8 + Math.random() * 7;
+    el.style.animationDuration = dur + 's';
+    el.style.animationDelay = '0s';
+    petalContainer.appendChild(el);
+    setTimeout(function() { el.remove(); }, dur * 1000 + 100);
+  }
+
+  // Spawn petals periodically
+  setInterval(spawnPetal, 1800);
+  // Initial burst
+  for (var i = 0; i < 5; i++) setTimeout(spawnPetal, i * 400);
+
+  // ── Scratch cards (works for both timeline & standalone interstitials) ──
+  function initScratchCard(container) {
+    var canvas = container.querySelector('canvas.scratch-overlay');
+    var label = container.querySelector('.scratch-label');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var isDrawing = false;
+    var scratchRadius = ('ontouchstart' in window) ? 30 : 22;
+    var initialized = false;
+
+    function initCanvas() {
+      if (initialized) return;
+      initialized = true;
+      var rect = container.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      // Soft floral gradient fill
+      var grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      grad.addColorStop(0, '#B8A9C9');
+      grad.addColorStop(0.5, '#D4A0A0');
+      grad.addColorStop(1, '#A0B4D4');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Decorative circles
+      for (var j = 0; j < 15; j++) {
+        ctx.beginPath();
+        ctx.arc(Math.random()*canvas.width, Math.random()*canvas.height, 6+Math.random()*18, 0, Math.PI*2);
+        ctx.fillStyle = ['#D4A0A0','#C5B3D9','#A0B4D4','#E8B4B8','#D8C8E8'][j%5];
+        ctx.globalAlpha = 0.25;
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) { initCanvas(); obs.unobserve(container); }
+      });
+    });
+    obs.observe(container);
+
+    function scratch(x, y) {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      ctx.arc(x, y, scratchRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+      var data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      var transparent = 0;
+      for (var k = 3; k < data.length; k += 16) {
+        if (data[k] === 0) transparent++;
+      }
+      if (transparent / (data.length / 16) > 0.45) {
+        canvas.style.transition = 'opacity 0.8s';
+        canvas.style.opacity = '0';
+        if (label) label.classList.add('hidden');
+        setTimeout(function() { canvas.remove(); }, 900);
+      }
+    }
+    function getPos(e) {
+      var rect = canvas.getBoundingClientRect();
+      var touch = e.touches ? e.touches[0] : e;
+      return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+    }
+    canvas.addEventListener('mousedown', function(e) { isDrawing = true; scratch(getPos(e).x, getPos(e).y); });
+    canvas.addEventListener('mousemove', function(e) { if (!isDrawing) return; scratch(getPos(e).x, getPos(e).y); });
+    canvas.addEventListener('mouseup', function() { isDrawing = false; });
+    canvas.addEventListener('mouseleave', function() { isDrawing = false; });
+    canvas.addEventListener('touchstart', function(e) { e.preventDefault(); isDrawing = true; scratch(getPos(e).x, getPos(e).y); }, {passive:false});
+    canvas.addEventListener('touchmove', function(e) { e.preventDefault(); if (!isDrawing) return; scratch(getPos(e).x, getPos(e).y); }, {passive:false});
+    canvas.addEventListener('touchend', function() { isDrawing = false; });
+  }
+
+  // Init all scratch cards (timeline + interstitials)
+  document.querySelectorAll('[data-scratch="true"]').forEach(initScratchCard);
+
+  // ── Collage → Carousel popup ──
+  var carouselPopup = document.getElementById('carouselPopup');
+  var carouselClose = document.getElementById('carouselClose');
+  var carouselPrev = document.getElementById('carouselPrev');
+  var carouselNext = document.getElementById('carouselNext');
+  var carouselImageWrap = document.getElementById('carouselImageWrap');
+  var carouselNote = document.getElementById('carouselNote');
+  var carouselCounter = document.getElementById('carouselCounter');
+  var currentPhotos = [];
+  var currentPhotoIdx = 0;
+  var touchStartX = 0;
+  var touchEndX = 0;
+
+  function showCarouselPhoto(idx) {
+    currentPhotoIdx = idx;
+    var photo = currentPhotos[idx];
+    // Update image
+    if (photo.src) {
+      carouselImageWrap.innerHTML = '<img src="' + photo.src + '" alt="Photo ' + (idx+1) + '">';
+    } else {
+      carouselImageWrap.innerHTML = '<div class="placeholder-slide"><span style="font-size:3rem;opacity:0.3">&#x1f4f7;</span><br>Photo ' + (idx+1) + '</div>';
+    }
+    // Update note — if empty, carouselNote becomes empty and CSS hides it
+    if (photo.note && photo.note.trim()) {
+      carouselNote.innerHTML = '<p>' + photo.note + '</p>';
+    } else {
+      carouselNote.innerHTML = '';
+    }
+    carouselCounter.textContent = (idx+1) + ' / ' + currentPhotos.length;
+    // Show/hide nav arrows
+    carouselPrev.style.display = currentPhotos.length > 1 ? 'flex' : 'none';
+    carouselNext.style.display = currentPhotos.length > 1 ? 'flex' : 'none';
+  }
+
+  function openCarousel(photos, startIdx) {
+    currentPhotos = photos;
+    showCarouselPhoto(startIdx || 0);
+    carouselPopup.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCarousel() {
+    carouselPopup.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  carouselClose.addEventListener('click', closeCarousel);
+  carouselPopup.addEventListener('click', function(e) {
+    if (e.target === carouselPopup) closeCarousel();
+  });
+  carouselPrev.addEventListener('click', function(e) {
+    e.stopPropagation();
+    showCarouselPhoto((currentPhotoIdx - 1 + currentPhotos.length) % currentPhotos.length);
+  });
+  carouselNext.addEventListener('click', function(e) {
+    e.stopPropagation();
+    showCarouselPhoto((currentPhotoIdx + 1) % currentPhotos.length);
+  });
+
+  // Swipe support on carousel popup
+  carouselImageWrap.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; }, {passive:true});
+  carouselImageWrap.addEventListener('touchend', function(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    var diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) { // swipe left → next
+        showCarouselPhoto((currentPhotoIdx + 1) % currentPhotos.length);
+      } else { // swipe right → prev
+        showCarouselPhoto((currentPhotoIdx - 1 + currentPhotos.length) % currentPhotos.length);
+      }
+    }
+  }, {passive:true});
+
+  // Keyboard nav
+  document.addEventListener('keydown', function(e) {
+    if (!carouselPopup.classList.contains('show')) return;
+    if (e.key === 'Escape') closeCarousel();
+    if (e.key === 'ArrowLeft') showCarouselPhoto((currentPhotoIdx - 1 + currentPhotos.length) % currentPhotos.length);
+    if (e.key === 'ArrowRight') showCarouselPhoto((currentPhotoIdx + 1) % currentPhotos.length);
+  });
+
+  // Attach click handlers to all collages
+  document.querySelectorAll('.collage').forEach(function(collage) {
+    collage.style.webkitTapHighlightColor = 'transparent';
+    collage.addEventListener('click', function() {
+      var photosData = collage.dataset.photos;
+      if (!photosData) return;
+      try {
+        var photos = JSON.parse(photosData);
+        openCarousel(photos, 0);
+      } catch(err) {}
+    });
+  });
+
+  // ── Blooming flower with popup ──
+  var petals = document.querySelectorAll('.bloom-petal');
+  var bloomCenter = document.getElementById('bloomCenter');
+  var bloomInstruction = document.getElementById('bloomInstruction');
+  var apologyFinal = document.getElementById('apologyFinal');
+  var petalOverlay = document.getElementById('petalOverlay');
+  var petalPopup = document.getElementById('petalPopup');
+  var petalPopupText = document.getElementById('petalPopupText');
+  var petalPopupClose = document.getElementById('petalPopupClose');
+  var petalPopupCount = document.getElementById('petalPopupCount');
+  var openedCount = 0;
+  var totalPetals = petals.length;
+  var petalIcons = ['\u{1F33A}','\u{1F33B}','\u{1F337}','\u{1F33C}','\u{1F338}','\u{1F33A}'];
+
+  // Position petals in a circle
+  petals.forEach(function(petal, i) {
+    var angle = (i / totalPetals) * 360;
+    petal.style.transform = 'rotate(' + angle + 'deg)';
+  });
+
+  function closePetalPopup() {
+    petalOverlay.classList.remove('show');
+    petalPopup.classList.remove('show');
+  }
+  petalPopupClose.addEventListener('click', closePetalPopup);
+  petalOverlay.addEventListener('click', closePetalPopup);
+
+  petals.forEach(function(petal) {
+    petal.style.webkitTapHighlightColor = 'transparent';
+    petal.addEventListener('click', function() {
+      var msg = petal.dataset.message;
+      var idx = parseInt(petal.dataset.index, 10);
+
+      // Mark as opened (first time only counts toward progress)
+      if (!petal.classList.contains('opened')) {
+        petal.classList.add('opened');
+        var currentAngle = parseFloat(petal.style.transform.replace('rotate(','').replace('deg)',''));
+        petal.style.transform = 'rotate(' + currentAngle + 'deg) scaleX(1.3) translateX(15px)';
+        petal.style.opacity = '0.6';
+        openedCount++;
+      }
+
+      // Show popup with the message
+      petalPopupText.textContent = msg;
+      petalPopup.querySelector('.petal-popup-icon').textContent = petalIcons[idx] || '\u{1F33A}';
+      petalPopupCount.textContent = openedCount + ' of ' + totalPetals + ' petals opened';
+      petalOverlay.classList.add('show');
+      petalPopup.classList.add('show');
+
+      // Update instruction
+      bloomInstruction.textContent = openedCount + ' of ' + totalPetals + ' petals opened';
+
+      if (openedCount === totalPetals) {
+        bloomCenter.classList.add('revealed');
+        bloomInstruction.textContent = 'all petals bloomed ❤';
+        setTimeout(function() {
+          apologyFinal.classList.add('visible');
+        }, 600);
+      }
+    });
+  });
+
+  // ── Starry night canvas ──
+  var starryCanvas = document.getElementById('starry-canvas');
+  var starryCtx = starryCanvas.getContext('2d');
+  var stars = [];
+  var shootingStars = [];
+  var starryRunning = false;
+
+  function initStars() {
+    starryCanvas.width = starryCanvas.offsetWidth;
+    starryCanvas.height = starryCanvas.offsetHeight;
+    stars = [];
+    for (var s = 0; s < 200; s++) {
+      stars.push({
+        x: Math.random() * starryCanvas.width,
+        y: Math.random() * starryCanvas.height,
+        r: Math.random() * 2 + 0.3,
+        twinkleSpeed: 0.005 + Math.random() * 0.02,
+        twinklePhase: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  function drawStars(time) {
+    if (!starryRunning) return;
+    starryCtx.fillStyle = '#0B1026';
+    starryCtx.fillRect(0, 0, starryCanvas.width, starryCanvas.height);
+
+    // Faint Monet-like nebula patches
+    var g1 = starryCtx.createRadialGradient(starryCanvas.width*0.3, starryCanvas.height*0.4, 0, starryCanvas.width*0.3, starryCanvas.height*0.4, starryCanvas.width*0.3);
+    g1.addColorStop(0, 'rgba(184,169,201,0.06)');
+    g1.addColorStop(1, 'transparent');
+    starryCtx.fillStyle = g1;
+    starryCtx.fillRect(0, 0, starryCanvas.width, starryCanvas.height);
+
+    var g2 = starryCtx.createRadialGradient(starryCanvas.width*0.7, starryCanvas.height*0.6, 0, starryCanvas.width*0.7, starryCanvas.height*0.6, starryCanvas.width*0.25);
+    g2.addColorStop(0, 'rgba(212,160,160,0.05)');
+    g2.addColorStop(1, 'transparent');
+    starryCtx.fillStyle = g2;
+    starryCtx.fillRect(0, 0, starryCanvas.width, starryCanvas.height);
+
+    // Draw stars with twinkling
+    stars.forEach(function(star) {
+      var opacity = 0.5 + 0.5 * Math.sin(time * star.twinkleSpeed + star.twinklePhase);
+      starryCtx.beginPath();
+      starryCtx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+      starryCtx.fillStyle = 'rgba(240,232,218,' + opacity + ')';
+      starryCtx.fill();
+      // Glow on bright stars
+      if (star.r > 1.5 && opacity > 0.7) {
+        starryCtx.beginPath();
+        starryCtx.arc(star.x, star.y, star.r * 3, 0, Math.PI * 2);
+        starryCtx.fillStyle = 'rgba(240,232,218,' + (opacity * 0.1) + ')';
+        starryCtx.fill();
+      }
+    });
+
+    // Shooting stars
+    if (Math.random() < 0.003) {
+      shootingStars.push({
+        x: Math.random() * starryCanvas.width,
+        y: Math.random() * starryCanvas.height * 0.5,
+        len: 60 + Math.random() * 80,
+        speed: 4 + Math.random() * 3,
+        angle: Math.PI / 4 + (Math.random() - 0.5) * 0.3,
+        life: 1
+      });
+    }
+    shootingStars.forEach(function(ss) {
+      var endX = ss.x + Math.cos(ss.angle) * ss.len * (1 - ss.life);
+      var endY = ss.y + Math.sin(ss.angle) * ss.len * (1 - ss.life);
+      var grad = starryCtx.createLinearGradient(ss.x, ss.y, endX, endY);
+      grad.addColorStop(0, 'rgba(240,232,218,0)');
+      grad.addColorStop(1, 'rgba(240,232,218,' + ss.life + ')');
+      starryCtx.strokeStyle = grad;
+      starryCtx.lineWidth = 1.5;
+      starryCtx.beginPath();
+      starryCtx.moveTo(ss.x, ss.y);
+      starryCtx.lineTo(endX, endY);
+      starryCtx.stroke();
+      ss.x += Math.cos(ss.angle) * ss.speed;
+      ss.y += Math.sin(ss.angle) * ss.speed;
+      ss.life -= 0.015;
+    });
+    shootingStars = shootingStars.filter(function(ss) { return ss.life > 0; });
+
+    requestAnimationFrame(drawStars);
+  }
+
+  var starryObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting && !starryRunning) {
+        starryRunning = true;
+        initStars();
+        requestAnimationFrame(drawStars);
+      } else if (!e.isIntersecting) {
+        starryRunning = false;
+      }
+    });
+  }, { threshold: 0.1 });
+  starryObserver.observe(document.getElementById('starrySection'));
+
+  window.addEventListener('resize', function() {
+    if (starryRunning) initStars();
+  });
+
+  // ── Letter typewriter effect ──
+  var letterLines = document.querySelectorAll('#letterBody .line');
+  var letterSign = document.getElementById('letterSign');
+  var letterTyped = false;
+
+  var letterObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting && !letterTyped) {
+        letterTyped = true;
+        letterLines.forEach(function(line, i) {
+          setTimeout(function() {
+            line.classList.add('typed');
+          }, i * 350);
+        });
+        setTimeout(function() {
+          letterSign.classList.add('visible');
+        }, letterLines.length * 350 + 500);
+      }
+    });
+  }, { threshold: 0.3 });
+  letterObserver.observe(document.getElementById('letterBody'));
+
+  // ── Music toggle ──
+  var musicBtn = document.getElementById('musicBtn');
+  var bgMusic = document.getElementById('bgMusic');
+  var isPlaying = false;
+  musicBtn.addEventListener('click', function() {
+    if (isPlaying) {
+      bgMusic.pause();
+      musicBtn.textContent = '♪';
+      musicBtn.classList.remove('playing');
+    } else {
+      bgMusic.play().catch(function(){});
+      musicBtn.textContent = '⏸';
+      musicBtn.classList.add('playing');
+    }
+    isPlaying = !isPlaying;
+  });
+
+  // ── Easter egg ──
+  var easterEgg = document.getElementById('easterEgg');
+  var eggOverlay = document.getElementById('eggOverlay');
+  var eggMessage = document.getElementById('eggMessage');
+  var eggClose = document.getElementById('eggClose');
+
+  easterEgg.style.webkitTapHighlightColor = 'transparent';
+  easterEgg.addEventListener('click', function() {
+    eggOverlay.classList.add('show');
+    eggMessage.classList.add('show');
+  });
+  eggClose.addEventListener('click', closeEgg);
+  eggOverlay.addEventListener('click', closeEgg);
+  function closeEgg() {
+    eggOverlay.classList.remove('show');
+    eggMessage.classList.remove('show');
+  }
+
+  // ── Reduced motion ──
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.timeline-item, .fade-in, .scratch-interstitial').forEach(function(el) {
+      el.classList.add('visible');
+    });
+    letterLines.forEach(function(line) { line.classList.add('typed'); });
+    letterSign.classList.add('visible');
+  }
+
+})();
+</script>
